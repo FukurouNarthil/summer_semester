@@ -6,20 +6,20 @@
 #define CELL_PIXEL			20
 
 // 用来绘图的颜色
-#define COLOR_SNAKE			RGB(193, 205, 205)
-#define COLOR_FOOD			RGB(153, 255, 51)
-#define COLOR_BOUNDARY		RGB(139, 134, 130)
-#define COLOR_TEXT			RGB(173,216,230)
+#define COLOR_SNAKE			RGB(255,192,203)
+#define COLOR_FOOD			RGB(199,21,133)
+#define COLOR_BOUNDARY		RGB(216,191,216)
+#define COLOR_TEXT			RGB(230,230,250)
 
 // 游戏的参数的设置 
 #define INIT_TIMER_ELAPSE	300	// 初始的时钟周期，确定游戏初始速度
-#define	ONE_LEVELS_SCORES	5	// 每升级一次需要的计分
-#define INIT_SNAKE_LEN		5	// 蛇的长度
+#define	ONE_LEVELS_SCORES	10	// 每升级一次需要的计分
+#define INIT_SNAKE_LEN		4	// 蛇的长度
 #define SPEEDUP_RATIO		0.8 // 升级以后时间周期（确定游戏速度）提高的比例。
-#define MAX_X		18	// 游戏界面大小
+#define MAX_X		24	// 游戏界面大小
 #define MAX_Y		20	// 游戏界面大小
-#define INIT_X		3	// 蛇的初始位置
-#define INIT_Y		3	// 蛇的初始位置
+#define INIT_X		6	// 蛇的初始位置
+#define INIT_Y		6	// 蛇的初始位置
 #define INIT_DIR	SNAKE_LEFT	// 蛇的初始方向
 
 /********************************************************************************
@@ -111,8 +111,11 @@ int WINAPI WinMain(
 
 	// 窗口类的样式，这里设置的样式表示窗口在大小变化是需要重绘
 	wc.style = CS_HREDRAW | CS_VREDRAW;
+
 	// 一个函数指针，这个函数用来处理窗口消息。 详见 MainWndProc函数的注释。
 	wc.lpfnWndProc = MainWndProc;
+
+
 	// no extra class memory 
 	wc.cbClsExtra = 0;
 	// no extra window memory
@@ -151,7 +154,7 @@ int WINAPI WinMain(
 
 	hwnd = CreateWindow(
 		"MainWClass",			// 窗口类名，必须是已经注册了的窗口类
-		"Snake Game!!",		// title-bar string 
+		"Snake!!",		// title-bar string 
 		WS_OVERLAPPEDWINDOW,	// 窗口的style，这个表示为top-level window 
 		CW_USEDEFAULT,			// 窗口水平位置default horizontal POINT 
 		CW_USEDEFAULT,			// 窗口垂直位置default vertical POINT 
@@ -285,7 +288,7 @@ void GamePaint(HWND hwnd)
 	lpFood = GetFood();
 
 	// （椭）圆形，使用上面选择的PEN勾勒边框，BRUSH填充
-	Rectangle(hdcmem,
+	Ellipse(hdcmem,
 		lpFood->x * CELL_PIXEL + rectBoundary.left,
 		lpFood->y * CELL_PIXEL + rectBoundary.top,
 		(lpFood->x + 1)*CELL_PIXEL + rectBoundary.left,

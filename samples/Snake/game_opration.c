@@ -139,7 +139,7 @@ void CreateGame(HWND hwnd, // 主窗口句柄
 	srand(ft.dwLowDateTime);
 
 	dbLevelSpeedupRatio = level_speedup_ratio;
-	dwTimerElapse = dwInitTimerElapse;
+	dwTimerElapse = dwInitTimerElapse / 3;
 	dwOneLevelScores = one_level_scores;
 
 	// 设置游戏的边界
