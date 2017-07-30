@@ -1,0 +1,213 @@
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">  
+    <html>  
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />  
+    <title>Electron</title>  
+    <style>  
+    #mainDiv div{  
+        width:28px;height:13px;background-color:#B2C8CD;position:absolute;  
+    }  
+    </style>  
+    <embed src="Electron.mp3" hidden="true" autostart="true" loop="true">
+    <script>
+    var $ = function (id) {//方便按id提取  
+        return document.getElementById(id);  
+    };  
+      
+    var zdivs = new Array();//用于存储所有的砖块div
+		
+	var score = 0;
+      
+    window.onload=function(){  
+        var x =50;
+		var y = 100;  
+        var m = $("mainDiv");  
+          
+        for(var i=0;i<=3;i++){  
+              
+            for(var j=0;j<26;j++){  
+                var di = document.createElement("div");  
+                di.style.top = y+i*15;  
+                di.style.left= x+j*30;  
+                m.appendChild(di);  
+                
+                zdivs[zdivs.length]=di;  
+            }         
+              
+              
+        }  
+      
+    }  
+      
+      
+    var ball_x = 435;//飞球初始坐标left  
+    var ball_y = 435;//飞球初始坐标top  
+    var angle = 89;//初始飞行角度  
+    var zx = 1;//控制left位移的正负  
+    var zy = -1;//控制top位移的正负  
+    var rp = null;//控制游戏进程  
+      
+    var ball_x1=0;  
+    var ball_y1=0;  
+      
+      
+    function go(){  
+            var qiu = $("ball");  
+              
+            ball_x = ball_x +zx*(1+Math.cos((2*Math.PI/360)*angle));  
+            ball_y = ball_y +zy*(1+Math.sin((2*Math.PI/360)*angle));  
+              
+            if(ball_y>=435){  
+                if(ball_x<bangleft||ball_x>bangleft+150){//判断是否接住  
+					alert('Game Over!');
+                    clearTimeout(rp);  
+                }else{  
+                    zy=-1;  
+                    if((ball_x-bangleft)>(75)){  
+                        angle = 90-(ball_x-bangleft+10-75)/75*90;  
+                        zx = 1;  
+                    }else{  
+                        angle = 90-(75-(ball_x-bangleft+10))/75*90;  
+                        zx=-1;  
+                    }  
+                    rp = setTimeout("go()",10);  
+                }  
+            }else{if(ball_y<=480)  
+                    for(var i=0,m = zdivs.length ;i<m;i++){  
+                        var io = checkIsP(ball_x,ball_y,zdivs[i].offsetLeft,zdivs[i].offsetTop);  
+                          
+                        if(io!=0){  
+                              
+                            zdivs[i].style.display = "none";  
+                            zdivs.splice(i,1); 
+							score++;
+							$("score").innerHTML = score;
+                            if(io==1){  
+                                zx=1;  
+                            }  
+                            if(io==2){  
+                                zx=-1;  
+                            }  
+                            if(io==3){  
+                                zy=1;  
+                            }  
+                            if(io==4){  
+                                zy=-1;  
+                            }  
+                            break;  
+                        }                 
+                    }  
+                  
+                if(ball_x>=880)zx=-1;  
+                if(ball_x<=0)zx=1;  
+                if(ball_y<65)zy=1;  
+                qiu.style.left = ball_x+"px";     
+                qiu.style.top = ball_y+"px";  
+                if(zdivs.length!=0)//如果砖块未打完  
+                rp = setTimeout("go()",10); 
+                }
+    }  
+      
+    function checkIsP(ball_x,ball_y,zx,zy){  
+        var f = {  
+            x:ball_x,  
+            y:ball_y,  
+            x1:ball_x+20,  
+            y1:ball_y+20  
+        }  
+        var z = {  
+            x:zx,  
+            y:zy,  
+            x1:zx+30,  
+            y1:zy+15  
+        }  
+        var sx;var sy;  
+        sx = f.x>=z.x?f.x:z.x;  
+        sy = f.y>=z.y?f.y:z.y;  
+        if(sx >= f.x && sx <= f.x1 && sy >= f.y && sy <= f.y1 && sx >= z.x && sx <= z.x1 && sy >= z.y && sy <= z.y1){  
+          
+            return seSmall(Math.abs(f.x-z.x1),Math.abs(f.x1-z.x),Math.abs(f.y-z.y1),Math.abs(f.y1-z.y));  
+              
+        }else{  
+            return 0;  
+        }  
+    }  
+      
+    function seSmall(a,b,c,d){  
+          
+        if(a<b&&a<c&&a<d){  
+            return 1;  
+        }  
+        if(b<a&&b<c&&b<d){  
+            return 2;  
+        }  
+        if(c<a&&c<b&&c<d){  
+            return 3;  
+        }  
+        if(d<b&&d<c&&d<a){  
+            return 4;  
+        }  
+    }  
+      
+    var bangleft = 370;  
+    var qiuleft = 485;  
+    var bs = 10;//棒的移动频率  
+    var kflag =  false;  
+    //键盘处理事件  
+    function keydownEvent(event){  
+            if(event.keyCode==32){//如果是空格  
+                if(!kflag)  
+                go()  
+                kflag = true;  
+            }  
+              
+              
+            var qiu = $("ball");  
+            var bang = $("board");  
+            if(event.keyCode==37){//如果是左箭头  
+                for(var i = 0;i<bs;i++){  
+                    if(bangleft-1!=0){  
+                        bangleft-=1;  
+                        bang.style.left = bangleft+"px";  
+                        if(!kflag){  
+                            qiuleft-=1;  
+                            ball_x-=1;  
+                            qiu.style.left = qiuleft+"px";  
+                        }  
+                    }  
+                }  
+            }  
+            if(event.keyCode==39){//如果是右箭头  
+                for(var i = 0;i<bs;i++){  
+                    if(bangleft+1!=750){  
+                        bangleft+=1;  
+                        bang.style.left = bangleft+"px";  
+                        if(!kflag){  
+                            qiuleft+=1;  
+                            ball_x+=1;  
+                            qiu.style.left = qiuleft+"px";  
+                        }  
+                    }  
+                }  
+            }  
+              
+        }  
+    </script>  
+    </head>  
+    <body onkeydown="keydownEvent(event)">  
+        <div> 
+           <img src="Electron.jpg" style="width:1000px;height:630px;position:relative;"> 
+            <div style="width: 900px;height: 530px;position: absolute;top: 70px;left: 50px;background-color: #FFFFFF;filter:alpha(Opacity=80);-moz-opacity:0.8;opacity: 0.8;" id="mainDiv">
+               <div style="width: 770px;height: 65px;position: absolute;left: 50px;
+               border-bottom: 2px solid #ABABAB;background-color:#FFFFFF; font-family:Dancing Script; font-size:50px; color: #ABABAB;">
+               	Score:<span id="score" style="height: 65px; width: 100px; position: absolute;
+               		left: 120px; font-family:Dancing Script; font-size:50px; color: #ABABAB;">
+               			0<!--<script>ShowScore()</script>-->
+               		</span>
+               </div>
+                <div id="ball" style="width:20px;height:20px;bottom:75;left:435;background-color:#CBE8E3"></div>  
+                <div id="board" style="width:150px;height:20px;bottom:55;left:370;background-color:#BEEFEC"></div>  
+            </div>  
+        </div>  
+    </body>  
+    </html>  
